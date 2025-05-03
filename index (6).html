@@ -1,0 +1,304 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Изучение сухопутных черепах</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <!-- Навигационная панель -->
+  <nav class="bg-green-600 text-white p-4 sticky top-0 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">Сухопутные черепахи</h1>
+      <ul class="flex space-x-6">
+        <li><a href="#home" class="hover:underline">Главная</a></li>
+        <li><a href="#behavior" class="hover:underline">Поведение</a></li>
+        <li><a href="#instincts" class="hover:underline">Инстинкты</a></li>
+        <li><a href="#diet" class="hover:underline">Питание</a></li>
+        <li><a href="#care" class="hover:underline">Уход</a></li>
+        <li><a href="#history" class="hover:underline">История</a></li>
+        <li><a href="#quiz" class="hover:underline">Викторина</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Главная секция -->
+  <section id="home" class="bg-cover bg-center h-screen text-white flex items-center" style="background-image: url('https://images.unsplash.com/photo-1591880877359-a6ebba3eb3e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80')">
+    <div class="container mx-auto text-center">
+      <h2 class="text-5xl font-extrabold mb-4">Узнайте всё о сухопутных черепахах!</h2>
+      <p class="text-xl mb-6">Погрузитесь в мир этих удивительных рептилий: поведение, питание, уход и история.</p>
+      <a href="#behavior" class="bg-green-600 px-6 py-3 rounded-full text-lg hover:bg-green-700">Начать изучение</a>
+    </div>
+  </section>
+
+  <!-- Поведение черепах -->
+  <section id="behavior" class="py-16">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-12">Поведение сухопутных черепах</h2>
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 p-6">
+          <ul class="list-disc list-inside">
+            <li>Одиночные животные, избегают социальных групп.</li>
+            <li>Активны днём, любят греться на солнце.</li>
+            <li>Прячутся в тени или роют норы при жаре.</li>
+            <li>Могут впадать в спячку или эстивацию в зависимости от климата.</li>
+          </ul>
+        </div>
+        <div class="md:w-1/2 p-6">
+          <img src="https://images.unsplash.com/photo-1600589926977-3e948e2eb0f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Черепаха греется на солнце" class="rounded-lg shadow-md">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Инстинкты -->
+  <section id="instincts" class="bg-gray-200 py-16">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-12">Инстинкты черепах</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Защитный инстинкт</h3>
+          <p>При угрозе черепахи втягивают голову и конечности в панцирь.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Репродуктивный инстинкт</h3>
+          <p>Самки роют ямы для откладки яиц, тщательно выбирая место.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Поиск пищи</h3>
+          <p>Ориентируются на запах и цвет, избегая токсичных растений.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Территориальность</h3>
+          <p>Некоторые виды метят территорию или защищают её.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Питание -->
+  <section id="diet" class="py-16">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-12">Чем питаются черепахи?</h2>
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 p-6">
+          <img src="https://images.unsplash.com/photo-1623072072227-a31b93ff1e81?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Черепаха ест траву" class="rounded-lg shadow-md">
+        </div>
+        <div class="md:w-1/2 p-6">
+          <ul class="list-disc list-inside">
+            <li>Растительноядны: травы, листья, цветы.</li>
+            <li>Едят фрукты и овощи (например, морковь, яблоки).</li>
+            <li>Нужны добавки кальция для крепкого панциря.</li>
+            <li>Избегают токсичных растений благодаря обонянию.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Уход за черепахами -->
+  <section id="care" class="bg-gray-200 py-16">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-12">Уход за сухопутными черепахами</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Террариум</h3>
+          <p>Просторный, с субстратом (песок, грунт) и укрытиями.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Температура и свет</h3>
+          <p>25–32°C, зона обогрева, UVB-лампы для витамина D3.</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">Питание и гигиена</h3>
+          <p>Сбалансированная диета, свежая вода, регулярная уборка.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- История черепах -->
+  <section id="history" class="py-16">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-12">История сухопутных черепах</h2>
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 p-6">
+          <ul class="list-disc list-inside">
+            <li>Появились 220 млн лет назад в мезозое.</li>
+            <li>Панцирь эволюционировал для защиты от хищников.</li>
+            <li>Выжили несколько массовых вымираний.</li>
+            <li>Символ долголетия в мифологии и культурах.</li>
+          </ul>
+        </div>
+        <div class="md:w-1/2 p-6">
+          <img src="https://images.unsplash.com/photo-1587556210773-fcf300e51a58?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Черепаха в пустыне" class="rounded-lg shadow-md">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Викторина -->
+  <section id="quiz" class="bg-gray-200 py-16">
+    <div class="container mx-auto">
+      <h2 class="text-3xl font-bold text-center mb-12">Проверь свои знания: Викторина о черепахах</h2>
+      <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+        <div id="quiz">
+          <h3 class="text-xl font-semibold mb-4" id="question"></h3>
+          <ul id="options" class="space-y-2"></ul>
+          <button id="submit" class="bg-green-600 text-white px-4 py-2 rounded mt-4 hover:bg-green-700">Ответить</button>
+        </div>
+        <p id="result" class="mt-4 hidden"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Модальное окно для результатов викторины -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg max-w-md text-center">
+      <h3 class="text-2xl font-bold mb-4">Результат викторины</h3>
+      <p id="modal-result"></p>
+      <button id="close-modal" class="bg-green-600 text-white px-4 py-2 rounded mt-4 hover:bg-green-700">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Подвал -->
+  <footer class="bg-green-600 text-white py-8">
+    <div class="container mx-auto text-center">
+      <p>© 2025 Изучение сухопутных черепах. Все права защищены.</p>
+      <p class="mt-2">Свяжитесь с нами: <a href="mailto:info@turtles.ru" class="underline">info@turtles.ru</a></p>
+    </div>
+  </footer>
+
+  <!-- JavaScript для плавной прокрутки и викторины -->
+  <script>
+    // Плавная прокрутка
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    // Логика викторины
+    const quizData = [
+      {
+        question: "Какой инстинкт заставляет черепах прятаться в панцирь?",
+        options: ["Защитный", "Репродуктивный", "Территориальный", "Поиск пищи"],
+        correct: "Защитный"
+      },
+      {
+        question: "Что едят сухопутные черепахи?",
+        options: ["Мясо", "Травы и листья", "Рыбу", "Насекомых"],
+        correct: "Травы и листья"
+      },
+      {
+        question: "Когда появились черепахи?",
+        options: ["220 млн лет назад", "10 млн лет назад", "500 тыс. лет назад", "1 млрд лет назад"],
+        correct: "220 млн лет назад"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const submitButton = document.getElementById('submit');
+    const resultElement = document.getElementById('result');
+    const modal = document.getElementById('modal');
+    const modalResult = document.getElementById('modal-result');
+    const closeModal = document.getElementById('close-modal');
+
+    function loadQuestion() {
+      const q = quizData[currentQuestion];
+      questionElement.textContent = q.question;
+      optionsElement.innerHTML = '';
+      q.options.forEach(option => {
+        const li = document.createElement('li');
+        li.innerHTML = `<input type="radio" name="option" value="${option}" class="mr-2">${option}`;
+        optionsElement.appendChild(li);
+      });
+    }
+
+    function checkAnswer() {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (!selected) return;
+
+      const answer = selected.value;
+      if (answer === quizData[currentQuestion].correct) {
+        score++;
+        resultElement.textContent = "Правильно!";
+      } else {
+        resultElement.textContent = `Неправильно! Правильный ответ: ${quizData[currentQuestion].correct}`;
+      }
+      resultElement.classList.remove('hidden');
+      submitButton.disabled = true;
+
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < quizData.length) {
+          loadQuestion();
+          resultElement.classList.add('hidden');
+          submitButton.disabled = false;
+        } else {
+          modalResult.textContent = `Вы ответили правильно на ${score} из ${quizData.length} вопросов!`;
+          modal.classList.remove('hidden');
+        }
+      }, 1000);
+    }
+
+    submitButton.addEventListener('click', checkAnswer);
+    closeModal.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      currentQuestion = 0;
+      score = 0;
+      loadQuestion();
+      submitButton.disabled = false;
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
